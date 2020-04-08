@@ -16,11 +16,19 @@ __author__ = "Божедомов Даниил Алексеевич"
 # print("a = ", b, "b = ", a) - это неправильное решение!
 
 # TODO: 
-a = 52
-b = 36
-c = b + a
-d = a + b
-print (c,d)
+a = int (input() )
+b = int (input() )
+c = a + b
+if (c>0):
+    a = c-a
+    b = c-a
+    print("a = ", a)
+    print("b = ", b)
+elif (c<0):
+    a = c-a
+    b = c-a
+    print("a = ", a)
+    print("b = ", b)
 
 # Задача-3: Напишите программу, вычисляющую корни квадратного уравнения вида
 # ax² + bx + c = 0.
