@@ -42,24 +42,31 @@ date = '01.22.1001'
 date = '1.12.1001'
 date = '-2.10.3001'
 # TODO:
-equation = 'y = 12x - 11111140.2121'
-x = 2.5
+date = input('Введите дату цифрами, разделённую точками ')
  
-a1 = equation.find('x')
-a2 = equation.find('=') + 2
- 
-a = float(equation[a2:a1])
- 
-if (equation[a1 + 2]) == '-':
-    sign = -1
+if not len(date) == 10:
+    print('Дата введена не верно')
+elif not date[:2].isnumeric() or not date[3:5].isnumeric() or not date[6:].isnumeric():
+    print('Пишите дату цифрами')
 else:
-    sign = 1
+    day = int(date[:2])
+    month = int(date[3:5])
+    year = int(date[6:])
  
-b = float(equation[a1 + 4:]) * sign
- 
-y = a * x + b
- 
-print(y)
+    if not date[2] or not date[5] == '.':
+        print('Разделите цифры точками')
+    elif day < 1 or month < 1:
+        print('Нельзя вернуться в прошлое')
+    elif month in [1,3,5,7,8,10,12] and day > 31:
+        print('В этом месяце не может быть больше 31-го дня')
+    elif month in [2,4,6,9,11] and day > 30:
+        print('В этом месяце не может быть больше 30-ти дней')
+    elif month > 12:
+        print('не бывает больше 12-ти месяцев')
+    elif year < 1:
+        print( 'Такого года не было' )
+    else:
+        print('Ваша дата - {} была введена верно'.format(date))
 # Задание-3: "Перевёрнутая башня" (Задача олимпиадного уровня)
 #
 # Вавилонцы решили построить удивительную башню —
