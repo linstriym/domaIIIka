@@ -58,129 +58,139 @@
 
 """
 #TODO:
-        self._title = ' ' + 'Карточка компьютера' + ' '
-        self._name = 'Компьютер'
- 
-        @property
-        def name(self):
-            return self._name
- 
-class Game(Card):
+import random
+
+
+class LotoCard(object):
+
     def __init__(self):
-        Card.__init__(self, rows_amount=3, cols_amount=9, nums_per_row=5, max_num=90)
-        self._do = ['1', '2', 'exit']
-        self._menu = '1 - играть с компьютером\n2 - играть с другом\nexit - выйти из игры'
-        self._unit1 = None
-        self._unit2 = None
- 
- 
-    def _init_game(self):
-        answer = ''
-        while answer not in self._do:
-            print(self._menu)
-            answer = input()
-        if answer == '1':
-            self._init_game_pve()
-        elif answer == '2':
-            self._init_game_pvp()
+
+        self.numbers = set()
+        self.card_numbers = []
+        self.__shufl()
+
+    def __shufl(self):
+
+        while len(self.numbers) < 15:
+
+            self.numbers.add(random.randint(1,91))
+
+        self.card_numbers = list(self.numbers)
+        self.card_numbers.extend(('__',) * 12)
+        random.shuffle(self.card_numbers)
+
+
+
+class Player(object):
+
+    def __init__(self, name = None):
+
+        self.is_human = bool()
+        self.name = name
+        if self.name == None:
+            self.name = "Компьютер"
+            self.is_human = False
+
         else:
-            exit()
- 
-    def _create_cards(self):
-        self._unit1.create_card()
-        self._unit2.create_card()
- 
-    def _init_game_pve(self):
-        self._unit1 = PlayerCard()
-        self._unit2 = ComputerCard()
-        self._create_cards()
- 
-    def _init_game_pvp(self):
-        self._unit1 = PlayerCard()
-        self._unit2 = PlayerCard()
-        self._create_cards()
- 
-    def _get_random_num(self):
-        random_numbers = random.sample(range(1, self._max_num + 1), self._max_num)
-        for i in random_numbers:
-            yield i, self._max_num - random_numbers.index(i) - 1
- 
-    def _check_answer(self, unit, num, answer):
-        if answer == 'exit':
-            print('Приходите еще поиграть')
-            exit()
-        elif answer != 'da' and answer != 'net':
-            self._check_answer(unit, num, input('Зачеркнуть цифру? (da/net)'))
-        elif answer == 'y' and unit.check_num(num):
-            unit.modify_card(num)
-            return 0
-        elif answer == 'n' and not unit.check_num(num):
-            return 0
-        elif answer == 'y' and not unit.check_num(num):
-            print('{} нет на вашей карточке.'.format(num), end=' ')
-            return 1
-        elif answer == 'n' and unit.check_num(num):
-            print('{} на вашей карточке.'.format(num), end=' ')
-            return 1
-        else:
-            print('Что-то пошло не так', answer)
-            return 1
- 
-    def _clean(self):
-        del self._unit1
-        del self._unit2
- 
-    def _lets_play(self):
-        num_generator = self._get_random_num()
-        gen_res = next(num_generator)
-        num = gen_res[0]
-        left = gen_res[1]
- 
-        while self._unit1.nums and self._unit2.nums:
-            print(self._unit1)
-            print(self._unit2)
- 
-            print('Новый бочонок: {} (осталось {})'.format(num, left))
-            print('Ходит {}'.format(self._unit1.name))
- 
-            if self._check_answer(self._unit1, num, input('Зачеркнуть цифру? (da/net)')):
-                if type(self._unit2) == PlayerCard:
-                    return '{}, к сожалению, вы проиграли.\nПоздравляем, {}! Вы победили'.format(self._unit1.name, self._unit2.name)
-                else:
-                    return '{}, к сожалению, вы проиграли.'.format(self._unit1.name)
-            if type(self._unit2) == PlayerCard:
-                print('Ходит {}'.format(self._unit2.name))
-                if self._check_answer(self._unit2, num, input('Зачеркнуть цифру? (y/n)')):
-                    return '{}, к сожалению, вы проиграли.\nПоздравляем, {}! Вы победили'.format(self._unit2.name, self._unit1.name)
-            else:
-                if self._unit2.check_num(num):
-                    self._unit2.modify_card(num)
- 
-            gen_res = next(num_generator)
-            num = gen_res[0]
-            left = gen_res[1]
- 
-        if not self._unit1.nums and not self._unit2.nums:
-            return 'Ничья!'
-        elif self._unit2.nums:
-            return 'Поздравляем, {}, вы победили!'.format(self._unit1.name)
-        else:
-            if type(self._unit2) == PlayerCard:
-                return 'Поздравляем, {}, вы победили!'.format(self._unit2.name)
-            else:
-                return 'Компьютер успел первым. Попробуйте еще раз.'
- 
-    def main(self):
+            self.is_human = True
+
+    def ask(self):
+
         while True:
-            answer = input('Сыграем? (da/net)')
-            if answer == 'da':
-                self._init_game()
-                print(self._lets_play())
-                self._clean()
-            elif answer == 'net':
-                print('До свидания!')
-                return
- 
+            ask = input('Зачеркнуть? y/n \n')
+
+            if ask.lower() == 'y':
+                return True
+            elif ask.lower() == 'n':
+                return False
+            else:
+                print('вы не ответили')
+                continue
+
+
+class Bag(object):
+
+    def __init__(self):
+
+        self.numbers = list(range(1, 91))
+        random.shuffle(self.numbers)
+
+    def push_barel(self):
+
+        return self.numbers.pop()
+
+
+class Lobby(object):
+    def __init__(self):
+        self.__bag = Bag()
+        self.card1 = LotoCard()
+        self.card2 = LotoCard()
+        self.pleer1 = Player(input('Введите ваше имя:\n'))
+        self.pleer2 = Player()
+
+    def show_cards(self):
+
+        print('{:-^26}'.format(f"Карточка {self.pleer1.name}"))
+        print(*self.card1.card_numbers[:9])
+        print(*self.card1.card_numbers[9:18])
+        print(*self.card1.card_numbers[18:])
+        print('--------------------------\n')
+        print('{:-^26}'.format(f"Карточка {self.pleer2.name}"))
+        print(*self.card2.card_numbers[:9])
+        print(*self.card2.card_numbers[9:18])
+        print(*self.card2.card_numbers[18:])
+        print('--------------------------')
+
+    def show_barel(self):
+        return self.__bag.push_barel()
+    @property
+    def barel_remained(self):
+        return len(self.__bag.numbers)
+
+    @staticmethod
+    def pleer_check(is_human, barel, numbers, card_numbers):
+
+        if is_human == True:
+
+            if barel in numbers:
+                right_answer = True
+            else:
+                right_answer = False
+
+            pleer_answer = lobby.pleer1.ask()
+
+            if pleer_answer != right_answer:
+                print('Вы проиграли.')
+                exit(0)
+            else:
+                if right_answer == True:
+
+                    card_numbers[card_numbers.index(barel)] = '--'
+                    numbers.pop()
+
+                else:
+                    pass
+        else:
+            if barel in numbers:
+                card_numbers[card_numbers.index(barel)] = '--'
+                numbers.pop()
+
 if __name__ == '__main__':
-    game = Game()
-    game.main()
+    lobby = Lobby()
+
+    while lobby.card1.numbers and lobby.card2.numbers:
+
+        barel = lobby.show_barel()
+
+        print(f'Новый бочонок: {barel} (осталось {lobby.barel_remained})')
+        lobby.show_cards()
+
+        lobby.pleer_check(lobby.pleer1.is_human, barel, lobby.card1.numbers, lobby.card1.card_numbers)
+        lobby.pleer_check(lobby.pleer2.is_human, barel, lobby.card2.numbers, lobby.card2.card_numbers)
+
+    if not lobby.card1.numbers and lobby.pleer1.is_human:
+        print('Вы выиграли')
+    elif not lobby.card2.numbers and lobby.pleer2.is_human:
+        print('Вы выиграли')
+    else:
+        print('Вы выиграли') 
